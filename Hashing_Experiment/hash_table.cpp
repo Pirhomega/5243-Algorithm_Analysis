@@ -1,17 +1,26 @@
 #include "hash_table.h"
 
+// Parameterized constructor for a hash table dynamically allocates
+// an array of pairs of length 'size' where each pair is initialized to
+// (0, false)
 Hash::Hash(int size) {
     hash_table_size = size;
     hash_table = new std::pair<int, bool>[hash_table_size];
+    // initialize entire hash table to (o, false)
     for (int i = 0; i < hash_table_size; ++i)
         hash_table[i] = std::make_pair(0,false);
 }
 
+// Deconstructor de-allocates the hash table and makes it
+// uncallable by pointing it to NULL
 Hash::~Hash() {
     delete [] hash_table;
     hash_table = NULL;
 }
 
+// InsertinTable will insert a value into a hash table with a CRP
+// of linear probing or double hashing, depending on the value of 
+// 'probe'
 int Hash::InsertinTable(int key_value, bool probe) {
     int location = key_value % hash_table_size, probeCount = 1;
     // if probe is true, linear probing will be used as the CRP.
@@ -36,18 +45,9 @@ int Hash::InsertinTable(int key_value, bool probe) {
     return probeCount;
 }
 
-// int Hash::Mod_Hash(int key_value, int sim_table_size) {
-    
-// }
-
-// int Hash::Lin_Probe(int key_value, int original_location, int table_size) {
-
-// }
-
-// int Hash::Double_Probe(int key_value, int original_location, int table_size) {
-    
-// }
+// Print_Table prints a hash table's contents by printing
+// each index and its corresponding value
 void Hash::Print_Table(std::ofstream& outf) {
-    for (int i = 0;i < hash_table_size;++i)
-        outf << "Index: " << i << "   Value: " << hash_table[i].first << '\n';
+    for (int i = 0 ; i < hash_table_size ; ++i)
+        outf <<  "| " << std::setw(3) << i <<  " |" << std::setw(5) << hash_table[i].first << "|\n";
 }
