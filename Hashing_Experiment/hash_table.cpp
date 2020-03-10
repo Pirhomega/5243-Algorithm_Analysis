@@ -37,7 +37,7 @@ int Hash::InsertinTable(int key_value, bool probe) {
             // this instruction is a combo of the following two:
             //    increment = (last digit of key) + 1
             //    location += increment
-            location = (location + (key_value - (key_value / 10) * 10) + 1) % hash_table_size;
+            location = (location + (key_value - (key_value/10) * 10) + 1) % hash_table_size;
             probeCount++;
         }
     }
@@ -49,5 +49,5 @@ int Hash::InsertinTable(int key_value, bool probe) {
 // each index and its corresponding value
 void Hash::Print_Table(std::ofstream& outf) {
     for (int i = 0 ; i < hash_table_size ; ++i)
-        outf <<  "| " << std::setw(3) << i <<  " |" << std::setw(5) << hash_table[i].first << "|\n";
+        outf <<"| " << std::setw(3)<<i<<" |"<< std::setw(5) << hash_table[i].first << "|\n";
 }
