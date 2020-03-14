@@ -1,3 +1,14 @@
+/*
+	5243 - Adv. Algorithm Analysis
+	Dr. Halverson, Spring 20
+	Hashing Experiment - Test Run
+	Corbin Matamoros
+	This initial version provides a proof of concept of hashing, demonstrating a hashing 
+	algorithm with a hash table implemented as a dynamically allocated array. Values are read 
+	in from a file and inserted into two hash tables, one with a linear probing CRP and the 
+	other with double hashing. 
+*/
+
 #include<iostream>
 #include<fstream>
 #include<utility>
@@ -68,8 +79,8 @@ void GenerateRandomValues(std::ofstream& out) {
     out.close();
 }
 
-// OpenFiles is hardcoded to open the test input values file given in the program assignment and output file
-// for ease
+// OpenFiles is hardcoded to open the test input values file given in the program assignment
+// and output file for ease
 void OpenFiles(std::ofstream& ofile, std::ifstream& ifile) {
     std::string ofile_name, ifile_name;
     char response;
