@@ -1,3 +1,10 @@
+/*
+	5243 - Adv. Algorithm Analysis
+	Dr. Halverson, Spring 20
+	Hashing Experiment - Head to head: linear probing versus double hashing
+	Corbin Matamoros 
+*/
+
 #pragma once
 #include<iostream>
 #include<iomanip>
@@ -8,12 +15,14 @@
 class Hash {
 public:
     // hash_table_size is the size of the hash table
-    // hash_table is a pointer to an array of pairs where each pair
-    // is the value in the hash table and a boolean. The boolean will
-    // be true if that location has had a value deleted from it,
-    // false otherwise. This boolean is not utilized in this program.
-    int hash_table_size, load_factor, n;
-    int* hash_table = NULL;
+    // load_factor_count is the number of keys able to be mapped
+    //      to the table. It is derived from the load factor
+    //      equation: load_factor = load_factor_count / table_size
+    // n is the number of keys mapped in the hash table at any given moment
+    // hash_table is a pointer to an array of integers
+    // 
+    int hash_table_size, load_factor_count, n;
+    int* hash_table = nullptr;
 public:
     Hash();
     Hash(int, int);
