@@ -74,8 +74,7 @@ int Hash::InsertinTable(int key_value, bool probe) {
             }
         }
         hash_table[location] = key_value;
-    } else {
-        std::cout << "Table full. No more inserts allowed.\n";
+        n++;
     }
     return probeCount;
 }
@@ -89,6 +88,7 @@ void Hash::Print_Table(std::ofstream& outf) {
 
 // resets all spots to zero
 void Hash::Reset_Table() {
+    n = 0;
     for (int i = 0; i < hash_table_size; ++i) {
         hash_table[i] = 0;
     }
