@@ -146,6 +146,7 @@ void Print_Tables(std::ofstream& outf, std::vector<Hash>& tables, std::vector<st
 
                 tables[k].Print_Table(outf);
             }
+            // this will produce an extra "Run 2" header at the bottom of the output file, so ignore that
         outf << "***********************************************************************************************\n"
             << "                                             Run 2                                            \n"
             << "***********************************************************************************************\n";
