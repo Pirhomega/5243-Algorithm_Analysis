@@ -88,8 +88,7 @@ int main() {
         }
     }
     Print_Tables(outfile, print_array, probe_count, load_percentage);
-    infile.close();
-    outfile.close();
+    infile.close(); outfile.close();
     return 0;
 }
 
@@ -129,7 +128,7 @@ void Print_Tables(std::ofstream& outf, std::vector<Hash>& tables, std::vector<st
             << "***********************************************************************************************\n";
         for (int i = 0; i < 8; i+=4) {
             for (int j = i, m = 0; j < 8, m < 2; ++j, ++m) {
-                outf << "----------------------------------------------------------------------------------------------n\n"
+                outf << "----------------------------------------------------------------------------------------------\n"
                 << "Hash Table: Linear Probing, " << load_percents[m] << " load factor\n"
                 << "----------------------------------------------------------------------------------------------\n"
                 << "|Index|Value|\n"

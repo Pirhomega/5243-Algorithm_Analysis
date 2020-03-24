@@ -1,0 +1,4 @@
+.vscode/
+*.code-workspace
+*.exe
+.~lock.hash experiment report.odt#
