@@ -29,5 +29,7 @@
 ```
 
 ## Running code
-### To compile and execute the Source folder code: ```g++ Source.cpp hash_table.cpp -o experiment.exe; ./experiment.exe```
-### To compile and execute the value_gen folder code: ```g++ generate_values.cpp -o gen.exe; ./gen.exe
+### To compile and execute the Source folder code: 
+``g++ Source.cpp hash_table.cpp -o experiment.exe; ./experiment.exe``
+### To compile and execute the value_gen folder code: 
+``g++ generate_values.cpp -o gen.exe; ./gen.exe``
