@@ -14,13 +14,18 @@
     To speed things up a bit, we will combine two runs into one program. This means
     the vector holding the four hash tables to be tested on will be formatted
     for the second run. Details are in the code.
+
+    THIS CODE IS AVAILABLE ON GITHUB: https://github.com/Pirhomega/5243-Algorithm_Analysis/tree/master/Hashing_Experiment
+
+    To compile and run (make sure you are in the Source folder):
+            g++ Source.cpp hash_table.cpp -o hash_experiment.exe
+            ./hash_experiment.exe
 */
 
 #include<iostream>
 #include<fstream>
 #include<utility>
 #include<string>
-#include<time.h>
 #include<vector>
 #include "hash_table.h"
 
@@ -101,7 +106,7 @@ void OpenFiles(std::ofstream& ofile, std::ifstream& ifile) {
     std::cout << "Using .htrvalues.dat as input file. Would you like to use a different file (y/n): "; 
     std::cin >> response;
     if (response == 'n') {
-        ifile_name = ".htrvalues.dat";
+        ifile_name = "../value_gen/.htrvalues.dat";
         std::cout << "Specify output file including the file extension: ";
         std::cin >> ofile_name;
     } else if (response == 'y') {

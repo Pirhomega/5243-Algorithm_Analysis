@@ -9,7 +9,6 @@
 #include<iostream>
 #include<iomanip>
 #include<fstream>
-#include<utility>
 
 // Hash is an object representing a hash table
 class Hash {
