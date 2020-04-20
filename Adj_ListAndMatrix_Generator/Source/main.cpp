@@ -8,30 +8,28 @@
 // DON'T FORGET TO REMOVE THIS LINE
 using namespace std;
 
-int findNumVerts(vector<pair<int, int>>&, string);
-void resizeAndInitialize(vector<vector<int>>&, vector<vector<int>>&, int);
-void processGraph(vector<vector<int>>&, vector<vector<int>>&, vector<pair<int, int>>&);
-void printList(vector<vector<int>>&, string);
-void printMatrix(vector<vector<int>>& structure, string outputFile);
-
-const char buff[4] = {'|', '/', '-', '\\'};
+int findNumVerts(vector<pair<int, int> >&, string);
+void resizeAndInitialize(vector<vector<int> >&, vector<vector<int> >&, int);
+void processGraph(vector<vector<int> >&, vector<vector<int> >&, vector<pair<int, int> >&);
+void printList(vector<vector<int> >&, ofstream&);
+void printMatrix(vector<vector<int> >&, ofstream&);
 
 int main() {
-    vector<vector<int>> adjList, adjMatrix;
-    vector<pair<int, int>> file_contents;
-    string infile_name = "Input1.txt", outfile_name = "Output.txt";
-    // for (int i = 0; i < 1; ++i) {
-        // cout << "Type infile and outfile names separated by one space (e.g. input.txt output.txt).\nThen, press enter to confirm: ";
-        // cin >> infile_name >> outfile_name;
+    vector<vector<int> > adjList, adjMatrix;
+    vector<pair<int, int> > file_contents;
+    string infile_name, outfile_name;
+    ofstream outfile;
+    for (int i = 0; i < 2; ++i) {
+        cout << "Type infile and outfile names separated by one space (e.g. input.txt output.txt).\nThen, press enter to confirm: ";
+        cin >> infile_name >> outfile_name; outfile.open(outfile_name);
         resizeAndInitialize(adjList, adjMatrix, findNumVerts(file_contents, infile_name)+1);
         cout << "Adjacency List and Matrix ready\n";
-        // for (int i = 0; i < 51; ++i)
-        //     cout << file_contents[i].first << " " << file_contents[i].second << '\n';
         processGraph(adjList, adjMatrix, file_contents);
-        cout << "Adjacency List and Matrix populated\nPrinting.";
-        // printList(adjList, outfile_name);
-        printMatrix(adjMatrix, outfile_name);
-    // }
+        cout << "Adjacency List and Matrix populated\nPrinting.\n";
+        printList(adjList, outfile);
+        printMatrix(adjMatrix, outfile);
+        outfile.close();
+    }
     return 0;
 }
 
@@ -43,7 +41,7 @@ int main() {
     the largest vertex will be sent back to main to be used to size the 
     adjacency list and matrix. 
 */
-int findNumVerts(vector<pair<int, int>>& edges, string infileName) {
+int findNumVerts(vector<pair<int, int> >& edges, string infileName) {
     int vert1, vert2, larg=-1;
     ifstream infile(infileName);
     while (infile >> vert1 >> vert2) {
@@ -65,7 +63,7 @@ int findNumVerts(vector<pair<int, int>>& edges, string infileName) {
     found in 'findNumVerts'. Size has been increased by 1 (in the function call) so our 
     vertices can be labelled from 1 to N instead of 0 to N-1
 */
-void resizeAndInitialize(vector<vector<int>>& list, vector<vector<int>>& matrix, int size) {
+void resizeAndInitialize(vector<vector<int> >& list, vector<vector<int> >& matrix, int size) {
     list.resize(size);
     matrix.resize(size, vector<int>(size));
     for (auto& i : matrix)
@@ -77,7 +75,7 @@ void resizeAndInitialize(vector<vector<int>>& list, vector<vector<int>>& matrix,
     This function will read one edge at a time from the edge vector 'edges' and
     input each edge into the adjacency list and matrix.
 */
-void processGraph(vector<vector<int>>& list, vector<vector<int>>& matrix, vector<pair<int, int>>& edges) {
+void processGraph(vector<vector<int> >& list, vector<vector<int> >& matrix, vector<pair<int, int> >& edges) {
     // remember that each edges is represented as two vertices (e.g. 1 2 is an edge between vertex 1 and 2)
     for (auto& edge : edges) {
         // push to the edge.first vertex the edge.second vertex. For example, if the edge is 1 2,
@@ -95,9 +93,8 @@ void processGraph(vector<vector<int>>& list, vector<vector<int>>& matrix, vector
 /*
     Prints the adjacency list to an output file
 */
-void printList(vector<vector<int>>& structure, string outputFile) {
+void printList(vector<vector<int> >& structure, ofstream& outfile) {
     int vertex = 0;
-    ofstream outfile(outputFile);
     outfile << "Vertices     Adjacent\n";
     for (auto& i : structure) {
         outfile << setw(6) << vertex << "       ";
@@ -106,36 +103,37 @@ void printList(vector<vector<int>>& structure, string outputFile) {
         outfile << '\n';
         vertex++;
     }
-    outfile.close();
 }
 
 /*
     Prints the adjacency matrix to an output file
 */
-void printMatrix(vector<vector<int>>& structure, string outputFile) {
-    int row = 0, count = 0, size = structure.size(), size2 = size * size;
-    clock_t t1, t2, ela = 0, time;
-    ofstream outfile(outputFile);
+void printMatrix(vector<vector<int> >& structure, ofstream& outfile) {
+    int row = 0, size = structure.size(); 
+    clock_t t0, t1, t2, ela = 0;
+    double seconds;
 
     outfile << setw(6) << ' ';
     for (int i = 0; i < size; ++i)
         outfile << setw(6) << i;
     outfile << '\n';
 
+    t0 = clock();
     for (auto& i : structure) {
+        t1 = clock();
+        ela = t1 - t0;
+
         outfile << setw(6) << row;
         for (auto& j : i) {
-            t1 = clock();
             outfile << setw(6) << j;
-            t2 = clock()-t1;
-            ela += t2;
-            time = (t2 * size2) - ela;
-            if (!(count % 100000))
-                cout << '\r' << buff[count%4]<< ' ' << (float(row+1)/size2)*10 << "% complete    Time left: " << time/1000 << flush;
-            count++;
         }
         outfile << '\n';
         row++;
+
+        t2 = clock() - t1;
+        seconds = (t2 * size) - ela;
+        if (!(row % 500))
+            cout << '\r' << setw(6) << setprecision(2) << fixed << (row*100.0)/size << setw(10) << "% complete" << setw(13) << "Time left: " << float(seconds)/CLOCKS_PER_SEC << " seconds" << flush;
     }
     outfile.close();
 }
