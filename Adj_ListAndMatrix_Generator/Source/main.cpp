@@ -1,33 +1,62 @@
+/*
+    Author: Corbin Matamoros
+    Class: 5243 Adv Algorithms
+    Professor: Dr. Halverson
+    Date: 4/21/2020
+    Program Description:
+        Program will process an undirected graph in the form of its set of edges and
+        represent it as an adjacency list and matrix. Edges must be organized
+        as "vertex1 vertex2", meaning there is an edge between 'vertex1' and
+        'vertex2'.
+
+        Note:   The code will place variables within the scope of their use if possible,
+                meaning plenty of declarations will be within for loops. Although this
+                may seem pointless, arguments can be made that it improves program
+                compilation and resource-usage efficiency 
+                (https://stackoverflow.com/questions/7959573/declaring-variables-inside-loops-good-practice-or-bad-practice)
+*/
+
 #include<iostream>
 #include<iomanip>
 #include<fstream>
 #include<string>
 #include<vector>
+#include<utility>
 #include<time.h>
 
-// DON'T FORGET TO REMOVE THIS LINE
-using namespace std;
-
-int findNumVerts(vector<pair<int, int> >&, string);
-void resizeAndInitialize(vector<vector<int> >&, vector<vector<int> >&, int);
-void processGraph(vector<vector<int> >&, vector<vector<int> >&, vector<pair<int, int> >&);
-void printList(vector<vector<int> >&, ofstream&);
-void printMatrix(vector<vector<int> >&, ofstream&);
+int findNumVerts(std::vector<std::pair<int, int> >&, std::string);
+void resizeAndInitialize(std::vector<std::vector<int> >&, std::vector<std::vector<int> >&, int);
+void processGraph(std::vector<std::vector<int> >&, std::vector<std::vector<int> >&, std::vector<std::pair<int, int> >&);
+void printList(std::vector<std::vector<int> >&, std::ofstream&);
+void printMatrix(std::vector<std::vector<int> >&, std::ofstream&);
 
 int main() {
-    vector<vector<int> > adjList, adjMatrix;
-    vector<pair<int, int> > file_contents;
-    string infile_name, outfile_name;
-    ofstream outfile;
-    for (int i = 0; i < 2; ++i) {
-        cout << "Type infile and outfile names separated by one space (e.g. input.txt output.txt).\nThen, press enter to confirm: ";
-        cin >> infile_name >> outfile_name; outfile.open(outfile_name);
-        resizeAndInitialize(adjList, adjMatrix, findNumVerts(file_contents, infile_name)+1);
-        cout << "Adjacency List and Matrix ready\n";
+    int inCount = 0;
+    std::cout << "State number of input sets to run: "; std::cin >> inCount;
+    // allow the program to run 'inCount' times for user's input sets
+    for (int i = 0; i < inCount; ++i) {
+        std::cout << '\n';
+        // 'adjList' and 'adjMatrix' are a 2D-std::vector adjacency list and matrix, respectively.
+        // 'file_contents' is a vectors of pairs designed to hold the entirety of an input file's
+        //          edge list (i.e. an edge between vertex u and v will be stored as 'std::make_pair(u,v)')
+        // 'infile_name', 'outfile_name', and 'outfile' will be used for file stream input and output
+        std::vector<std::vector<int> > adjList, adjMatrix;
+        std::vector<std::pair<int, int> > file_contents;
+        std::string infile_name, outfile_name; std::ofstream outfile;
+
+        std::cout << "Type infile and outfile names separated by one space (e.g. input.txt output.txt).\nThen, press enter to confirm: ";
+        std::cin >> infile_name >> outfile_name; outfile.open(outfile_name);
+
+        // configure list and matrix sizes to fit # of vertices in a graph
+        resizeAndInitialize(adjList, adjMatrix, findNumVerts(file_contents, infile_name) + 1);
+
+        // load the edges into the list and matrix
         processGraph(adjList, adjMatrix, file_contents);
-        cout << "Adjacency List and Matrix populated\nPrinting.\n";
+
+        // print out the contents of the list and matrix (not recommended for large graphs)
         printList(adjList, outfile);
         printMatrix(adjMatrix, outfile);
+
         outfile.close();
     }
     return 0;
@@ -41,65 +70,72 @@ int main() {
     the largest vertex will be sent back to main to be used to size the 
     adjacency list and matrix. 
 */
-int findNumVerts(vector<pair<int, int> >& edges, string infileName) {
-    int vert1, vert2, larg=-1;
-    ifstream infile(infileName);
-    while (infile >> vert1 >> vert2) {
+int findNumVerts(std::vector<std::pair<int, int> >& edges, std::string infileName) {
+    // 'u' and 'v' are just containers that will hold the two vertices in an edge
+    // 'larg' will hold the largest vertex number in the input set (which will also be
+    //          the number of vertices in the graph)
+    // 'infile' will open 'infileName' and read from it
+    int u, v, larg=-1;
+    std::ifstream infile(infileName);
+    while (infile >> u >> v) {
         // we push the edges to 'edges' so we don't have to re-read
-        // from the input file when we perform the adjacency list- / matrix-forming
-        // algorithm in main
-        edges.push_back(make_pair(vert1, vert2));
-        if (vert1 > larg)
-            larg = vert1;
-        if (vert2 > larg)
-            larg = vert2;
+        // from the input file when we call 'processGraph'
+        edges.push_back(std::make_pair(u, v));
+        if (u > larg)
+            larg = u;
+        if (v > larg)
+            larg = v;
     }
-        infile.close();
+    infile.close();
     return larg;
 }
 
 /*
     This simple function resizes the adjacency list and matrix to the largest vertex number
-    found in 'findNumVerts'. Size has been increased by 1 (in the function call) so our 
-    vertices can be labelled from 1 to N instead of 0 to N-1
+    found in 'findNumVerts'.
 */
-void resizeAndInitialize(vector<vector<int> >& list, vector<vector<int> >& matrix, int size) {
-    list.resize(size);
-    matrix.resize(size, vector<int>(size));
+void resizeAndInitialize(std::vector<std::vector<int> >& list, std::vector<std::vector<int> >& matrix, int size) {
+    list.resize(size, std::vector<int>(0));
+    matrix.resize(size, std::vector<int>(size));
     for (auto& i : matrix)
         for (auto& j : i)
            j = 0;
 }
 
 /*
-    This function will read one edge at a time from the edge vector 'edges' and
+    This function will read one edge at a time from the edge std::vector 'edges' and
     input each edge into the adjacency list and matrix.
 */
-void processGraph(vector<vector<int> >& list, vector<vector<int> >& matrix, vector<pair<int, int> >& edges) {
-    // remember that each edges is represented as two vertices (e.g. 1 2 is an edge between vertex 1 and 2)
-    for (auto& edge : edges) {
-        // push to the edge.first vertex the edge.second vertex. For example, if the edge is 1 2,
+void processGraph(std::vector<std::vector<int> >& list, std::vector<std::vector<int> >& matrix, std::vector<std::pair<int, int> >& edges) {
+    // remember that each edge is represented as two vertices (e.g. 1 2 is an edge between vertex 1 and 2)
+    for (auto edge : edges) {
+        int u = edge.first, v = edge.second;
+        // push to the edge.first vertex the edge.second vertex. For example, if the edge (u,v) is (1,2),
         // this will push to row 1 of 'list' the vertex 2
-        list[edge.first].push_back(edge.second);
+        list[u].push_back(v);
         // Since the graph is undirected, we need to push the inverse of the above instruction (i.e.
         // push vertex 1 to row 2 of 'list') since an edge from vertex1 to vertex2 is also an edge
         // from vertex2 to vertex1.
-        list[edge.second].push_back(edge.first);
+        list[v].push_back(u);
         // do the exact same as the above two instructions for the adjacency matrix
-        matrix[edge.first][edge.second] = matrix[edge.second][edge.first] = 1;
+        matrix[u][v] = matrix[v][u] = 1;
     }
 }
 
 /*
     Prints the adjacency list to an output file
 */
-void printList(vector<vector<int> >& structure, ofstream& outfile) {
+void printList(std::vector<std::vector<int> >& structure, std::ofstream& outfile) {
+    // 'vertex' is a generic counter used to label the 'Vertices' column in output file
     int vertex = 0;
     outfile << "Vertices     Adjacent\n";
-    for (auto& i : structure) {
-        outfile << setw(6) << vertex << "       ";
-        for (auto& j : i)
-           outfile << j << ' ';
+    // 'row' will iterate "down" the adjacency list
+    for (auto& row : structure) {
+        outfile << std::setw(6) << vertex << "       ";
+        // 'adj' iterates through contects of each 'row' for all
+        //      vertices adjacent to vertex represented by 'row'
+        for (auto& adj : row)
+           outfile << adj << ' ';
         outfile << '\n';
         vertex++;
     }
@@ -108,32 +144,45 @@ void printList(vector<vector<int> >& structure, ofstream& outfile) {
 /*
     Prints the adjacency matrix to an output file
 */
-void printMatrix(vector<vector<int> >& structure, ofstream& outfile) {
-    int row = 0, size = structure.size(); 
-    clock_t t0, t1, t2, ela = 0;
-    double seconds;
+void printMatrix(std::vector<std::vector<int> >& structure, std::ofstream& outfile) {
+    // 't0', 't1', 't2', 'ela', 'numVerts', and 'seconds' are used to track printing progress by printing
+    //          percentage of print job completed and approximate time left till completed.
+    //          It's something experimental I wanted to try out, and it works well for 
+    //          large graphs (|V| > 5,000)
+    // 'vertex' is a generic counter used to label the matrix rows in output file
+    // 'numVerts' is also used to print the matrix column labels in output file
+    clock_t t0;
+    int vertex = 0, numVerts = structure.size(); 
 
-    outfile << setw(6) << ' ';
-    for (int i = 0; i < size; ++i)
-        outfile << setw(6) << i;
+    outfile << std::setw(6) << ' ';
+    for (int i = 0; i < numVerts; ++i)
+        outfile << std::setw(6) << i;
     outfile << '\n';
 
     t0 = clock();
-    for (auto& i : structure) {
-        t1 = clock();
-        ela = t1 - t0;
 
-        outfile << setw(6) << row;
-        for (auto& j : i) {
-            outfile << setw(6) << j;
+    for (auto& row : structure) {
+        clock_t t1 = clock(), ela = t1 - t0, t2;
+        double seconds;
+
+        // Actual printing part of the 'for' block.
+        // The rest is "how long till program 
+        //        finishes" code
+        /*****************************************/
+        outfile << std::setw(6) << vertex;
+        for (auto& col : row) {
+            outfile << std::setw(6) << col;
         }
         outfile << '\n';
-        row++;
-
+        vertex++;
+        /*****************************************/
+        // Time remaining is [(time to process one row) times (total number of rows)] minus [elapsed time]
         t2 = clock() - t1;
-        seconds = (t2 * size) - ela;
-        if (!(row % 500))
-            cout << '\r' << setw(6) << setprecision(2) << fixed << (row*100.0)/size << setw(10) << "% complete" << setw(13) << "Time left: " << float(seconds)/CLOCKS_PER_SEC << " seconds" << flush;
+        seconds = (t2 * numVerts) - ela;
+        // update the percentage complete and time remaining once every 500 rows
+        if (!(vertex % 500))
+            std::cout << '\r' << std::setw(6) << std::setprecision(2) << std::fixed << (vertex*100.0)/numVerts << std::setw(10) << "% complete" << std::setw(13)
+                    << "Time left: " << std::setw(6) << float(seconds)/CLOCKS_PER_SEC << std::setw(8) << " seconds" << std::flush;
     }
     outfile.close();
 }
