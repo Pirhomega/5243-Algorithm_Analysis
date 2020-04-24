@@ -23,6 +23,7 @@
 #include<vector>
 #include<utility>
 #include<unordered_map>
+#include<algorithm>
 #include<time.h>
 
 int findNumVerts(std::vector<std::pair<std::string, std::string> >&, std::unordered_map<std::string,int>&, std::unordered_map<int,std::string >&, std::string);
@@ -140,6 +141,12 @@ void processGraph(std::vector<std::vector<std::string> >& list, std::vector<std:
         // do the exact same as the above two instructions for the adjacency matrix
         matrix[verts[u]][verts[v]] = matrix[verts[v]][verts[u]] = 1;
     }
+    std::sort(list[0], list[list.size()-1]);
+    for (auto i : list) {
+        for (auto j : i)
+            std::cout << j << ' ';
+    }
+    std::cout << '\n';
 }
 
 /*
