@@ -54,14 +54,14 @@ int main() {
         std::string infile_name, outfile_name; std::ofstream outfile;
 
         std::cout << "Type infile and outfile names separated by one space (e.g. input.txt output.txt).\nThen, press enter to confirm: ";
-        std::cin >> infile_name >> outfile_name; outfile.open(outfile_name);
+        std::cin >> infile_name >> outfile_name; outfile.open("../Output_Files/" + outfile_name);
 
         // configure list and matrix sizes to fit # of vertices in a graph
-        resizeAndInitialize(adjList, adjMatrix, findNumVerts(file_contents, verts, indices, infile_name));
-        for (auto& i : adjList) {
-            for (auto& j : i)
-                std::cout << j << ' ';
-        }
+        // We add 1 to the return value of 'findNumVerts' so the list and matrix
+        //      will be the correct size. Since 'count' in 'findNumVerts' is initialized at 0
+        //      the size of the list and matrix needs to be one larger than the largest index
+        //      in both (i.e. an array with indices 0, 1, and 2 is size 3)
+        resizeAndInitialize(adjList, adjMatrix, findNumVerts(file_contents, verts, indices, infile_name)+1);
 
         // load the edges into the list and matrix
         processGraph(adjList, adjMatrix, file_contents, verts);
@@ -88,27 +88,24 @@ int findNumVerts(std::vector<std::pair<std::string, std::string> >& edges, std::
     // 'u' and 'v' are just containers that will hold the two vertices in an edge
     // 'infile' will open 'infileName' and read from it
     std::string u, v;
-    std::ifstream infile(infileName);
-    int count = 1;
+    std::ifstream infile("../Input_Files/" + infileName);
+    int count = -1;
     while (infile >> u >> v) {
         // we push the edges to 'edges' so we don't have to re-read
         // from the input file when we call 'processGraph'
         edges.push_back(std::make_pair(u, v));
-        if (!verts[u]) {
+        if (verts.find(u) == verts.end()) {
+            count++;
             verts[u] = count;
             index[count] = u;
-            std::cout << "Found " << u << '\n';
-            count++;
         }
-        if (!verts[v]) {
+        if (verts.find(v) == verts.end()) {
+            count++;
             verts[v] = count;
             index[count] = v;
-            std::cout << "Found " << v << '\n';
-            count++;
         }
     }
     infile.close();
-    std::cout << count << '\n';
     return count;
 }
 
@@ -151,7 +148,7 @@ void processGraph(std::vector<std::vector<std::string> >& list, std::vector<std:
 void printList(std::vector<std::vector<std::string> >& list, std::unordered_map<int,std::string >& index, std::ofstream& outfile) {
     // 'vertex' is a generic counter used to label the 'Vertices' column in output file
     int vertex = 0;
-    outfile << "Vertices     Adjacent\n";
+    outfile << "Adjacency List\n-----------------------------------\nVertices     Adjacent\n";
     // 'row' will iterate "down" the adjacency list
     for (auto& row : list) {
         outfile << std::setw(6) << index[vertex] << "       ";
@@ -177,9 +174,15 @@ void printMatrix(std::vector<std::vector<int> >& matrix, std::unordered_map<int,
     clock_t t0;
     int vertex = 0, numVerts = matrix.size(); 
 
-    outfile << std::setw(6) << ' ';
+    outfile << "----------------------------------------------------------------------------------\n"
+            << "Adjacency Matrix\n----------------------------------------------------------------------------------\n";
+
+    outfile << std::setw(7) << ' ';
     for (int i = 0; i < numVerts; ++i)
         outfile << std::setw(6) << index[i];
+    outfile << '\n' << std::setw(7) << ' ';
+    for (int i = 0; i < numVerts*6; ++i)
+        outfile << '-';
     outfile << '\n';
 
     t0 = clock();
@@ -192,7 +195,7 @@ void printMatrix(std::vector<std::vector<int> >& matrix, std::unordered_map<int,
         // The rest is "how long till program 
         //        finishes" code
         /*****************************************/
-        outfile << std::setw(6) << index[vertex];
+        outfile << std::setw(6) << index[vertex] << std::setw(1) << '|';
         for (auto& col : row) {
             outfile << std::setw(6) << col;
         }
@@ -203,9 +206,10 @@ void printMatrix(std::vector<std::vector<int> >& matrix, std::unordered_map<int,
         t2 = clock() - t1;
         seconds = (t2 * numVerts) - ela;
         // update the percentage complete and time remaining once every 500 rows
-        if (!(vertex % 500))
+        if (!(vertex % 500)) 
             std::cout << '\r' << std::setw(6) << std::setprecision(2) << std::fixed << (vertex*100.0)/numVerts << std::setw(10) << "% complete" << std::setw(13)
                     << "Time left: " << std::setw(6) << float(seconds)/CLOCKS_PER_SEC << std::setw(8) << " seconds" << std::flush;
     }
+    std::cout << "\nTime to complete: " << (float(clock()) - float(t0))/1000 << " seconds\n";
     outfile.close();
 }
