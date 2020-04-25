@@ -1,6 +1,6 @@
-# Hashing Experiment
+# Adjacency List and Matrix Generator
 
-## Advance Algorithm Analysis, Spring 2020
+## Advanced Algorithm Analysis, Spring 2020
 
 ### Author
 
