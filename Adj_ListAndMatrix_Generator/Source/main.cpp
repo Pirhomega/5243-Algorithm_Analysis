@@ -7,7 +7,8 @@
         Program will process an undirected graph in the form of its set of edges and
         represent it as an adjacency list and matrix. Edges must be organized
         as "vertex1 vertex2", meaning there is an edge between 'vertex1' and
-        'vertex2'.
+        'vertex2'. For ease of reading, the adjacency matrix has had all zeros
+        replaced with '-'.
 
         Note:   The code will place variables within the scope of their use if possible,
                 meaning plenty of declarations will be within for loops. Although this
@@ -26,36 +27,37 @@
 #include<algorithm>
 #include<time.h>
 
-int findNumVerts(std::vector<std::pair<std::string, std::string> >&, std::unordered_map<std::string,int>&, std::unordered_map<int,std::string >&, std::string);
-void resizeAndInitialize(std::vector<std::vector<std::string> >&, std::vector<std::vector<int> >&, int);
-void processGraph(std::vector<std::vector<std::string> >&, std::vector<std::vector<int> >&, 
-                    std::vector<std::pair<std::string, std::string> >&, std::unordered_map<std::string,int>&);
-void printList(std::vector<std::vector<std::string> >&, std::unordered_map<int,std::string >&, std::ofstream&);
-void printMatrix(std::vector<std::vector<int> >&, std::unordered_map<int,std::string >&, std::ofstream&);
+using namespace std;
+
+int findNumVerts(vector<pair<string, string> >&, unordered_map<string,int>&, unordered_map<int,string >&, string);
+void resizeAndInitialize(vector<vector<string> >&, vector<vector<string> >&, int);
+void processGraph(vector<vector<string> >&, vector<vector<string> >&, 
+                    vector<pair<string, string> >&, unordered_map<string,int>&);
+void printList(vector<vector<string> >&, unordered_map<int,string >&, ofstream&);
+void printMatrix(vector<vector<string> >&, unordered_map<int,string >&, ofstream&);
 
 int main() {
     int inCount = 0;
-    std::cout << "State number of input sets to run: "; std::cin >> inCount;
+    cout << "State number of input sets to run: "; cin >> inCount;
     // allow the program to run 'inCount' times for user's input sets
     for (int i = 0; i < inCount; ++i) {
-        std::cout << '\n';
-        // 'adjList' and 'adjMatrix' are a 2D-std::vector adjacency list and matrix, respectively.
+        cout << '\n';
+        // 'adjList' and 'adjMatrix' are a 2D-vector adjacency list and matrix, respectively.
         // 'file_contents' is a vectors of pairs designed to hold the entirety of an input file's
-        //          edge list (i.e. an edge between vertex u and v will be stored as 'std::make_pair(u,v)')
+        //          edge list (i.e. an edge between vertex u and v will be stored as 'make_pair(u,v)')
         // 'verts' will hold all unique vertices from the input file. Its size is the number of vertices in the graph
         //      Now, 'verts' will map strings to integers, and the integers will provide means of indexing the list
         //      and matrix (vectors need to be indexed by integers).
         // 'indices' is exactly the same  as 'verts', but flipped. This is used in the printing functions.
         // 'infile_name', 'outfile_name', and 'outfile' will be used for file stream input and output
-        std::vector<std::vector<std::string> > adjList; 
-        std::vector<std::vector<int> > adjMatrix;
-        std::vector<std::pair<std::string, std::string> > file_contents;
-        std::unordered_map<std::string,int > verts;
-        std::unordered_map<int,std::string > indices;
-        std::string infile_name, outfile_name; std::ofstream outfile;
+        vector<vector<string> > adjList, adjMatrix;
+        vector<pair<string, string> > file_contents;
+        unordered_map<string,int > verts;
+        unordered_map<int,string > indices;
+        string infile_name, outfile_name; ofstream outfile;
 
-        std::cout << "Type infile and outfile names separated by one space (e.g. input.txt output.txt).\nThen, press enter to confirm: ";
-        std::cin >> infile_name >> outfile_name; outfile.open("../Output_Files/" + outfile_name);
+        cout << "Type infile and outfile names separated by one space (e.g. input.txt output.txt).\nThen, press enter to confirm: ";
+        cin >> infile_name >> outfile_name; outfile.open("../Output_Files/" + outfile_name);
 
         // configure list and matrix sizes to fit # of vertices in a graph
         // We add 1 to the return value of 'findNumVerts' so the list and matrix
@@ -84,17 +86,17 @@ int main() {
     the largest vertex will be sent back to main to be used to size the 
     adjacency list and matrix. 
 */
-int findNumVerts(std::vector<std::pair<std::string, std::string> >& edges, std::unordered_map<std::string,int>& verts, 
-                std::unordered_map<int,std::string >& index, std::string infileName) {
+int findNumVerts(vector<pair<string, string> >& edges, unordered_map<string,int>& verts, 
+                unordered_map<int,string >& index, string infileName) {
     // 'u' and 'v' are just containers that will hold the two vertices in an edge
     // 'infile' will open 'infileName' and read from it
-    std::string u, v;
-    std::ifstream infile("../Input_Files/" + infileName);
+    string u, v;
+    ifstream infile("../Input_Files/" + infileName);
     int count = -1;
     while (infile >> u >> v) {
         // we push the edges to 'edges' so we don't have to re-read
         // from the input file when we call 'processGraph'
-        edges.push_back(std::make_pair(u, v));
+        edges.push_back(make_pair(u, v));
         if (verts.find(u) == verts.end()) {
             count++;
             verts[u] = count;
@@ -114,23 +116,23 @@ int findNumVerts(std::vector<std::pair<std::string, std::string> >& edges, std::
     This simple function resizes the adjacency list and matrix to the largest vertex number
     found in 'findNumVerts'.
 */
-void resizeAndInitialize(std::vector<std::vector<std::string> >& list, std::vector<std::vector<int> >& matrix, int size) {
-    list.resize(size, std::vector<std::string>(0));
-    matrix.resize(size, std::vector<int>(size));
+void resizeAndInitialize(vector<vector<string> >& list, vector<vector<string> >& matrix, int size) {
+    list.resize(size, vector<string>(0));
+    matrix.resize(size, vector<string>(size));
     for (auto& i : matrix)
         for (auto& j : i)
-           j = 0;
+           j = '-';
 }
 
 /*
-    This function will read one edge at a time from the edge std::vector 'edges' and
+    This function will read one edge at a time from the edge vector 'edges' and
     input each edge into the adjacency list and matrix.
 */
-void processGraph(std::vector<std::vector<std::string> >& list, std::vector<std::vector<int> >& matrix, 
-        std::vector<std::pair<std::string, std::string> >& edges, std::unordered_map<std::string,int>& verts) {
+void processGraph(vector<vector<string> >& list, vector<vector<string> >& matrix, 
+        vector<pair<string, string> >& edges, unordered_map<string,int>& verts) {
     // remember that each edge is represented as two vertices (e.g. 1 2 is an edge between vertex 1 and 2)
     for (auto edge : edges) {
-        std::string u = edge.first, v = edge.second;
+        string u = edge.first, v = edge.second;
         // push to the edge.first vertex the edge.second vertex. For example, if the edge (u,v) is (1,2),
         // this will push to row 1 of 'list' the vertex 2
         list[verts[u]].push_back(v);
@@ -139,26 +141,20 @@ void processGraph(std::vector<std::vector<std::string> >& list, std::vector<std:
         // from vertex2 to vertex1.
         list[verts[v]].push_back(u);
         // do the exact same as the above two instructions for the adjacency matrix
-        matrix[verts[u]][verts[v]] = matrix[verts[v]][verts[u]] = 1;
+        matrix[verts[u]][verts[v]] = matrix[verts[v]][verts[u]] = '1';
     }
-    std::sort(list[0], list[list.size()-1]);
-    for (auto i : list) {
-        for (auto j : i)
-            std::cout << j << ' ';
-    }
-    std::cout << '\n';
 }
 
 /*
     Prints the adjacency list to an output file
 */
-void printList(std::vector<std::vector<std::string> >& list, std::unordered_map<int,std::string >& index, std::ofstream& outfile) {
+void printList(vector<vector<string> >& list, unordered_map<int,string >& index, ofstream& outfile) {
     // 'vertex' is a generic counter used to label the 'Vertices' column in output file
     int vertex = 0;
     outfile << "Adjacency List\n-----------------------------------\nVertices     Adjacent\n";
     // 'row' will iterate "down" the adjacency list
     for (auto& row : list) {
-        outfile << std::setw(6) << index[vertex] << "       ";
+        outfile << setw(6) << index[vertex] << "       ";
         // 'adj' iterates through contects of each 'row' for all
         //      vertices adjacent to vertex represented by 'row'
         for (auto& adj : row)
@@ -171,7 +167,7 @@ void printList(std::vector<std::vector<std::string> >& list, std::unordered_map<
 /*
     Prints the adjacency matrix to an output file
 */
-void printMatrix(std::vector<std::vector<int> >& matrix, std::unordered_map<int,std::string >& index, std::ofstream& outfile) {
+void printMatrix(vector<vector<string> >& matrix, unordered_map<int,string >& index, ofstream& outfile) {
     // 't0', 't1', 't2', 'ela', 'numVerts', and 'seconds' are used to track printing progress by printing
     //          percentage of print job completed and approximate time left till completed.
     //          It's something experimental I wanted to try out, and it works well for 
@@ -184,10 +180,10 @@ void printMatrix(std::vector<std::vector<int> >& matrix, std::unordered_map<int,
     outfile << "----------------------------------------------------------------------------------\n"
             << "Adjacency Matrix\n----------------------------------------------------------------------------------\n";
 
-    outfile << std::setw(7) << ' ';
+    outfile << setw(7) << ' ';
     for (int i = 0; i < numVerts; ++i)
-        outfile << std::setw(6) << index[i];
-    outfile << '\n' << std::setw(7) << ' ';
+        outfile << setw(6) << index[i];
+    outfile << '\n' << setw(7) << ' ';
     for (int i = 0; i < numVerts*6; ++i)
         outfile << '-';
     outfile << '\n';
@@ -202,9 +198,9 @@ void printMatrix(std::vector<std::vector<int> >& matrix, std::unordered_map<int,
         // The rest is "how long till program 
         //        finishes" code
         /*****************************************/
-        outfile << std::setw(6) << index[vertex] << std::setw(1) << '|';
+        outfile << setw(6) << index[vertex] << setw(1) << '|';
         for (auto& col : row) {
-            outfile << std::setw(6) << col;
+            outfile << setw(6) << col;
         }
         outfile << '\n';
         vertex++;
@@ -214,9 +210,9 @@ void printMatrix(std::vector<std::vector<int> >& matrix, std::unordered_map<int,
         seconds = (t2 * numVerts) - ela;
         // update the percentage complete and time remaining once every 500 rows
         if (!(vertex % 500)) 
-            std::cout << '\r' << std::setw(6) << std::setprecision(2) << std::fixed << (vertex*100.0)/numVerts << std::setw(10) << "% complete" << std::setw(13)
-                    << "Time left: " << std::setw(6) << float(seconds)/CLOCKS_PER_SEC << std::setw(8) << " seconds" << std::flush;
+            cout << '\r' << setw(6) << setprecision(2) << fixed << (vertex*100.0)/numVerts << setw(10) << "% complete" << setw(13)
+                    << "Time left: " << setw(6) << float(seconds)/CLOCKS_PER_SEC << setw(8) << " seconds" << flush;
     }
-    std::cout << "\nTime to complete: " << (float(clock()) - float(t0))/1000 << " seconds\n";
+    cout << "\nTime to complete: " << (float(clock()) - float(t0))/1000 << " seconds\n";
     outfile.close();
 }
