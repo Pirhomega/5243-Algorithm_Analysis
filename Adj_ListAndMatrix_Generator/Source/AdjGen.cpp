@@ -31,8 +31,10 @@ using namespace std;
 
 int findNumVerts(vector<pair<string, string> >&, unordered_map<string,int>&, vector<string>&, string);
 void resizeAndInitialize(vector<vector<string> >&, vector<vector<string> >&, int);
+
 void processList(vector<vector<string> >&, vector<pair<string, string> >&, unordered_map<string,int>&);
 void processMatrix(vector<vector<string> >&, vector<pair<string, string> >&, unordered_map<string,int>&);
+
 void printList(vector<vector<string> >&, vector<string>&, unordered_map<string,int>&, ofstream&, string);
 void printMatrix(vector<vector<string> >&, vector<string>&, unordered_map<string,int>&, ofstream&, string);
 
@@ -51,7 +53,7 @@ int main() {
         // 'verts' will hold all unique vertices from the input file. Its size is the number of vertices in the graph
         //      Now, 'verts' will unordered_map strings to integers, and the integers will provide means of indexing the list
         //      and matrix (vectors need to be indexed by integers).
-        // 'indices' will be a list of unique vertices in the graph.
+        // 'indices' will be a list of unique vertices in the graph
         // 'infile_name', 'outfile_name', and 'outfile' will be used for file stream input and output
         vector<vector<string> > adjList, adjMatrix;
         vector<pair<string, string> > file_contents;
@@ -191,7 +193,6 @@ void printMatrix(vector<vector<string> >& matrix, vector<string>& index, unorder
     //          percentage of print job completed and approximate time left till completed.
     //          It's something experimental I wanted to try out, and it works well for 
     //          large graphs (|V| > 5,000)
-    // 'vertex' is a generic counter used to label the matrix rows in output file
     // 'numVerts' is also used to print the matrix column labels in output file
     clock_t t0;
     int numVerts = matrix.size(); 

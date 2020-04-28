@@ -5,10 +5,31 @@ NOTE: Each graph is represented by its set of edges ('u','v') within each input 
 
 -----------------------------------------------------------------------------------------------------------------
 
+Printing list and matrix in sorted order explaination:
+    - I keep track of all unique vertices read in from an input file in the vector, 'indices'
+        - E.G. 'indices' = [b, a, d, c] where b, a, d, and c are vertices in a graph
+    - If I sort 'indices', all the vertices will be sorted in semi-lexographical order (sorted by the first character of each vertex)
+    - I also map each unique vertex read in to a value, 'counter' (initialized to zero). E.G. the first unique vertex will map to 0, second unique one maps to 1, etc.
+        - E.G. map = {b:0, a:1, d:2, c:3}
+    - I process the list and matrix normally, loading them, row by row, by the order assigned in the mapping ()
+        - E.G. in a list:   b -> adjacent vertices
+                            a -> adjacent vertices
+                            d -> etc.
+    - Now, sort 'indices' and begin iterating through all vertices in it
+        - E.G. [a, b, c, d]
+    - If I want to print in the same order found in 'indices', I have to find the vertex's actual mapped index in the list/matrix and print from there
+        - E.G. indices[0] == a; map[a] == 1; print row 1 contents in list/matrix
+        - This gets slightly more complicated when printing the matrix because we have to print the columns using the mapping technique as well
+
+-----------------------------------------------------------------------------------------------------------------
+
+##############################
 List Algorithm in Pseudocode:
+##############################
 
 'AdjList' = 2D vector
 'verts' = unordered map
+'indices' = vector
 'list_of_edges' = vector of pairs
 'list_of_vertices' = vector of unique vertices
 'counter' = 0
@@ -16,17 +37,20 @@ for every edge ('u','v') in input file:
     Read vertices 'u', 'v' from file and put in 'list_of_edges' as a pair ('u','v')
     if 'u' is not in 'verts'
         map value of 'counter' to key 'u' in 'verts'
+        push 'u' to 'indices'
         'counter' += 1
     if 'v' is not in 'verts'
         map value of 'counter' to key 'v' in 'verts'
+        push 'v' to 'indices'
         'counter' += 1
 resize 'AdjList' to be a "'counter' X 0" 2D vector
 
 for every edge ('u','v') in 'list_of_edges':
     assign vertex 'v' to vertex 'u''s row
     assign vertex 'u' to vertex 'v''s row
-sort 'list_of_vertices' by lexographical order
-for each vertex 'u' in 'list_of_vertices':
+
+// I explain this in 'Printing list and matrix in sorted order explaination'
+for each vertex 'u' in 'indices':
     output 'u' to output file
     find mapped index for 'u' in 'verts'
     directly access mapped index for 'u' in 'AdjList' and iterate through
@@ -35,19 +59,24 @@ for each vertex 'u' in 'list_of_vertices':
 
 -----------------------------------------------------------------------------------------------------------------
 
+###############################
 Matrix Algorithm in Pseudocode:
+###############################
 
 'AdjMatrix' = 2D vector
 'list_of_edges' = vector of pairs
 'verts' = unordered map
+'indices' = vector
 'counter' = 0
 for every edge ('u','v') in input file:
     Read vertices 'u', 'v' from file and put in 'list_of_edges' as a pair ('u','v')
     if 'u' is not in 'verts'
         map value of 'counter' to key 'u' in 'verts'
+        push 'u' to 'indices'
         'counter' += 1
     if 'v' is not in 'verts'
         map value of 'counter' to key 'v' in 'verts'
+        push 'v' to 'indices'
         'counter' += 1
 resize 'AdjMatrix' to be a "'counter' X 'counter'" 2D vector
 initilize each element in 'AdjMatrix' to character '-'
@@ -55,11 +84,12 @@ initilize each element in 'AdjMatrix' to character '-'
 for every edge ('u','v') in 'list_of_edges':
     assign spot ('u','v') in 'AdjMatrix' the character '1'
     assign spot ('v','u') in 'AdjMatrix' the character '1'
-sort 'list_of_vertices' by lexographical order
-for each vertex 'u' in 'list_of_vertices':
+
+// I explain this in 'Printing list and matrix in sorted order explaination'
+for each vertex 'u' in 'indices':
     find mapped index for 'u' in 'verts'
     directly access mapped index for 'u' in 'AdjMatrix' and iterate through
     for 'j' in range 0 to size('verts'):
-        find mapped index for all vertex in 'verts[j]'
+        find mapped index for all vertices in 'verts[j]'
         directly access mapped index for 'v' in 'u''s row
         output value for spot (directly mapped index for 'u', directly mapped index for 'v') to output file
