@@ -1,0 +1,65 @@
+The following is an overview of the algorithm and program in AdjGen.cpp for
+generating the adjacency list and matrix representations of a graph
+
+NOTE: Each graph is represented by its set of edges ('u','v') within each input file
+
+-----------------------------------------------------------------------------------------------------------------
+
+List Algorithm in Pseudocode:
+
+'AdjList' = 2D vector
+'verts' = unordered map
+'list_of_edges' = vector of pairs
+'list_of_vertices' = vector of unique vertices
+'counter' = 0
+for every edge ('u','v') in input file:
+    Read vertices 'u', 'v' from file and put in 'list_of_edges' as a pair ('u','v')
+    if 'u' is not in 'verts'
+        map value of 'counter' to key 'u' in 'verts'
+        'counter' += 1
+    if 'v' is not in 'verts'
+        map value of 'counter' to key 'v' in 'verts'
+        'counter' += 1
+resize 'AdjList' to be a "'counter' X 0" 2D vector
+
+for every edge ('u','v') in 'list_of_edges':
+    assign vertex 'v' to vertex 'u''s row
+    assign vertex 'u' to vertex 'v''s row
+sort 'list_of_vertices' by lexographical order
+for each vertex 'u' in 'list_of_vertices':
+    output 'u' to output file
+    find mapped index for 'u' in 'verts'
+    directly access mapped index for 'u' in 'AdjList' and iterate through
+    for each vertex 'v' in mapped index for 'u' in 'AdjList':
+        output 'v' to output file
+
+-----------------------------------------------------------------------------------------------------------------
+
+Matrix Algorithm in Pseudocode:
+
+'AdjMatrix' = 2D vector
+'list_of_edges' = vector of pairs
+'verts' = unordered map
+'counter' = 0
+for every edge ('u','v') in input file:
+    Read vertices 'u', 'v' from file and put in 'list_of_edges' as a pair ('u','v')
+    if 'u' is not in 'verts'
+        map value of 'counter' to key 'u' in 'verts'
+        'counter' += 1
+    if 'v' is not in 'verts'
+        map value of 'counter' to key 'v' in 'verts'
+        'counter' += 1
+resize 'AdjMatrix' to be a "'counter' X 'counter'" 2D vector
+initilize each element in 'AdjMatrix' to character '-'
+
+for every edge ('u','v') in 'list_of_edges':
+    assign spot ('u','v') in 'AdjMatrix' the character '1'
+    assign spot ('v','u') in 'AdjMatrix' the character '1'
+sort 'list_of_vertices' by lexographical order
+for each vertex 'u' in 'list_of_vertices':
+    find mapped index for 'u' in 'verts'
+    directly access mapped index for 'u' in 'AdjMatrix' and iterate through
+    for 'j' in range 0 to size('verts'):
+        find mapped index for all vertex in 'verts[j]'
+        directly access mapped index for 'v' in 'u''s row
+        output value for spot (directly mapped index for 'u', directly mapped index for 'v') to output file

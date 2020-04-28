@@ -1,0 +1,32 @@
+1. Read from an input file once and push data to 'edges' (lines 67, and 89-113). 
+    Data is read in pairs, 'u' and 'v' (i.e. (u,v)), and pushed as a pair to the vector 'edges'.
+    The map, 'verts', is used to track all the unique vertices, where each vertex is mapped to an
+    monoincrementing integer (initialized to zero). Later, if for example the vertices in a graph's 
+    input file are labelled as letters (A through Z), we can perform direct access on the list 
+    and matrix representations with the mapped value from 'index'.
+    NOTE: 'findNumVerts' returns the number of unique vertices read so I can resize
+            the list and matrix once (more on that later).
+
+2. Resize the list and matrix to the value returned from 'findNumVerts', and initiliaze
+    the matrix elements to the character '-' (lines 67, and 119-125)
+
+3. Using the vector 'edges', load the adjacency list (line 70, and 132-144).
+    Each edge is read from 'edges' as a pair (u,v) where 'u' is pushed to 
+    the 'v' row and vice versa, since all graphs processed by this program are
+    undirected. The 'verts' map is used for indexing.
+
+4. Using the vector 'edges', load the adjacency matrix (line 71, and 150-157).
+    Each edge is read from 'edges' as a pair (u,v) where 'u' and 'v' are assigned
+    spots rows and columns per their mapped value in 'verts'. The (u,v) spot in the
+    matrix is assigned the '1' character.
+
+5. Print the adjacency list in lexographical order (line 74, and 162-176). I sort the list first. 
+    Then, since the adjacency list data structure is a vector of vectors, a double for loop 
+    can easily iterate through each vertex's row and list of adjacent vertices and print
+    them to the output file.
+    
+6. Print the adjacency matrix in lexographical order (line 75, and 185-232). I sort the matrix first. 
+    Then, since the adjacency matrix data structure is a vector of vectors, a double for loop 
+    can easily iterate each column of every vertex's row and print straight to the output file.
+
+-----------------------------------------------------------------------------------------------------------------
